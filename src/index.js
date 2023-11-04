@@ -1,10 +1,12 @@
 const express = require('express');
 const app = express();
+const cors = require('cors');
 
 //base de datos
 require('./database');
 
 //json
+app.use(cors());
 app.use(express.json());
 
 //rutas
