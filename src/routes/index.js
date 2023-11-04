@@ -3,7 +3,7 @@ const router = Router();
 
 const User = require('../models/User');
 
-const Balance = require('../models/balance');
+const Tarjeta = require('../models/Tarjeta');
 
 const jwt = require('jsonwebtoken');
 
@@ -76,25 +76,25 @@ router.get('/private-tasks', verifyToken, (req, res) => {
 
 //Saldo
 // Agrega un saldo para un usuario
-router.post('/add-balance',  async (req, res) => {
+router.post('/add-tarjeta',  async (req, res) => {
     const { saldo, cardNumber, fecha } = req.body;
-    const newBalance = new Balance({
+    const newTarjeta = new Tarjeta({
       saldo,
       cardNumber,
       fecha,
     });
-    await newBalance.save();
-    res.status(200).json(newBalance);
+    await newTarjeta.save();
+    res.status(200).json(newTarjeta);
   });
   
   // Obtiene el saldo de un usuario
-  router.get('/get-balance', async (req, res) => {
+  router.get('/get-tarjeta', async (req, res) => {
     const userId = req.params.userId;
-    const balance = await Balance.findOne({ user: userId });
-    if (!balance) {
+    const tarjeta = await Tarjeta.findOne({ user: userId });
+    if (!tarjeta) {
       return res.status(404).json({ message: 'Saldo no encontrado' });
     }
-    res.status(200).json(balance);
+    res.status(200).json(tarjeta);
   });
 
 module.exports = router;
