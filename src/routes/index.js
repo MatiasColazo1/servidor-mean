@@ -5,6 +5,8 @@ const User = require('../models/User');
 
 const Tarjeta = require('../models/Tarjeta');
 
+const Transaccion = require('../models/Transaccion')
+
 const jwt = require('jsonwebtoken');
 
 router.get('/', (req, res) => res.send('Hola mundo'));
@@ -147,6 +149,71 @@ router.patch('/update-tarjeta', async (req, res) => {
         return res.status(500).json({ message: 'Error interno del servidor' });
     }
 });
+
+router.post('/post-transaccion', async (req, res) => {
+    try {
+      const { transaccionId, nombre, monto, fecha, horario, estado } = req.body;
+  
+      const nuevaTransaccion = new Transaccion({
+        transaccionId,
+        nombre,
+        monto,
+        fecha: new Date(fecha),
+        horario,
+        estado,
+      });
+  
+      await nuevaTransaccion.save();
+  
+      res.status(200).json(nuevaTransaccion);
+    } catch (error) {
+      res.status(500).json({ error: 'Error al procesar la transacción' });
+    }
+  });
+  
+  // Obtener una transacción por su ID personalizado
+  router.get('/transaccion/:transaccionId', async (req, res) => {
+    try {
+      const transaccionId = req.params.transaccionId;
+      const transaccion = await Transaccion.findOne({ transaccionId });
+  
+      if (!transaccion) {
+        return res.status(404).json({ message: 'Transacción no encontrada' });
+      }
+  
+      res.status(200).json(transaccion);
+    } catch (error) {
+      res.status(500).json({ error: 'Error al obtener la transacción' });
+    }
+  });
+
+  // Actualizar la única transacción existente
+router.put('/update-transaccion', async (req, res) => {
+    try {
+      const { nombre, monto, fecha, horario, estado } = req.body;
+  
+      // Buscar la única transacción (siempre es la misma)
+      const transaccion = await Transaccion.findOne();
+  
+      if (!transaccion) {
+        return res.status(404).json({ message: 'Transacción no encontrada' });
+      }
+  
+      // Actualizar los campos de la transacción
+      transaccion.nombre = nombre;
+      transaccion.monto = monto;
+      transaccion.fecha = fecha;
+      transaccion.horario = horario;
+      transaccion.estado = estado;
+  
+      // Guardar la transacción actualizada
+      await transaccion.save();
+  
+      res.status(200).json(transaccion);
+    } catch (error) {
+      res.status(500).json({ error: 'Error al actualizar la transacción' });
+    }
+  });
 
 module.exports = router;
 
