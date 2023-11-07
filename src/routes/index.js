@@ -150,40 +150,22 @@ router.patch('/update-tarjeta', async (req, res) => {
     }
 });
 
-router.post('/post-transaccion', async (req, res) => {
+router.post('/transaccion', async (req, res) => {
     try {
-      const { transaccionId, nombre, monto, fecha, horario, estado } = req.body;
-  
-      const nuevaTransaccion = new Transaccion({
-        transaccionId,
-        nombre,
-        monto,
-        fecha: new Date(fecha),
-        horario,
-        estado,
-      });
-  
-      await nuevaTransaccion.save();
-  
-      res.status(200).json(nuevaTransaccion);
+      const newTransaction = new Transaccion(req.body);
+      await newTransaction.save();
+      res.json(newTransaction);
     } catch (error) {
-      res.status(500).json({ error: 'Error al procesar la transacción' });
+      res.status(500).json({ error: 'No se pudo crear la transacción' });
     }
   });
-  
-  // Obtener una transacción por su ID personalizado
-  router.get('/transaccion/:transaccionId', async (req, res) => {
+
+  router.get('/transaccion', async (req, res) => {
     try {
-      const transaccionId = req.params.transaccionId;
-      const transaccion = await Transaccion.findOne({ transaccionId });
-  
-      if (!transaccion) {
-        return res.status(404).json({ message: 'Transacción no encontrada' });
-      }
-  
-      res.status(200).json(transaccion);
+      const transactions = await Transaccion.find();
+      res.json(transactions);
     } catch (error) {
-      res.status(500).json({ error: 'Error al obtener la transacción' });
+      res.status(500).json({ error: 'No se pudieron obtener las transacciones' });
     }
   });
 
