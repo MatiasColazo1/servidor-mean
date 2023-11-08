@@ -197,6 +197,23 @@ router.put('/update-transaccion', async (req, res) => {
     }
   });
 
+  router.delete('/transaccion/:transaccionId', async (req, res) => {
+    const transaccionId = req.params.transaccionId;
+  
+    try {
+      const deletedTransaction = await Transaccion.findOneAndDelete({ transaccionId: transaccionId });
+  
+      if (!deletedTransaction) {
+        return res.status(404).json({ message: 'Transacción no encontrada' });
+      }
+  
+      res.status(200).json({ message: 'Transacción eliminada exitosamente', deletedTransaction });
+    } catch (error) {
+      res.status(500).json({ error: 'Error al eliminar la transacción' });
+    }
+  });
+  
+
 module.exports = router;
 
 //rutas privadas
