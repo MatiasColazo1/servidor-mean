@@ -9,6 +9,8 @@ const Transaccion = require('../models/Transaccion')
 
 const Menu = require('../models/menu');
 
+const Balance = require('../models/balance')
+
 const jwt = require('jsonwebtoken');
 
 
@@ -235,7 +237,47 @@ router.put('/update-transaccion', async (req, res) => {
       res.status(500).json({ error: 'No se pudo crear el menu' });
     }
   });
+
+  // Balance
+
+  router.get('/balance', async (req, res) => {
+    try {
+      const data = await Balance.find({}).exec();
+      const lastWeekData = data.map(entry => entry.lastWeekValue);
+      const thisWeekData = data.map(entry => entry.thisWeekValue);
   
+      const chartData = {
+        lastWeekData,
+        thisWeekData,
+      };
+  
+      res.json(chartData);
+    } catch (err) {
+      console.error(err);
+      res.status(500).send('Error al obtener datos de balance');
+    }
+  });
+
+  router.post('/balance', async (req, res) => {
+    const { lastWeekValue, thisWeekValue } = req.body;
+  
+    if (typeof lastWeekValue !== 'number' || typeof thisWeekValue !== 'number') {
+      res.status(400).json({ message: 'Datos inválidos' });
+    } else {
+      try {
+        const newBalance = new Balance({
+          lastWeekValue,
+          thisWeekValue,
+        });
+  
+        const savedBalance = await newBalance.save();
+        res.json(savedBalance);
+      } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: 'Error al guardar el registro de balance' });
+      }
+    }
+  });
 
 module.exports = router;
 
