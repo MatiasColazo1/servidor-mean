@@ -7,7 +7,10 @@ const Tarjeta = require('../models/Tarjeta');
 
 const Transaccion = require('../models/Transaccion')
 
+const Menu = require('../models/menu');
+
 const jwt = require('jsonwebtoken');
+
 
 router.get('/', (req, res) => res.send('Hola mundo'));
 
@@ -210,6 +213,26 @@ router.put('/update-transaccion', async (req, res) => {
       res.status(200).json({ message: 'Transacción eliminada exitosamente', deletedTransaction });
     } catch (error) {
       res.status(500).json({ error: 'Error al eliminar la transacción' });
+    }
+  });
+
+  // Menu
+  router.get('/menu', async (req, res) => {
+    try {
+      const menu = await Menu.find();
+      res.json(menu);
+    } catch (error) {
+      res.status(500).json({ error: 'No se pudieron obtener los datos del menu' });
+    }
+  });
+
+  router.post('/menu', async (req, res) => {
+    try {
+      const newMenu = new Menu(req.body);
+      await newMenu.save();
+      res.json(newMenu);
+    } catch (error) {
+      res.status(500).json({ error: 'No se pudo crear el menu' });
     }
   });
   
